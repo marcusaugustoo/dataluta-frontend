@@ -1,32 +1,38 @@
-# React + TypeScript + Vite
+# DATALUTA - Formulários de Cadastro de Notícias
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Sistema de cadastro e documentação de notícias do **Banco de Dados da Luta pela Terra (DATALUTA - UNESP)**, contemplando os módulos **Dataluta Floresta** e **Dataluta Agrário**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Como Executar o Projeto
 
-## React Compiler
+### Pré-requisitos
+- **Node.js** instalado (versão 18 ou superior recomendada)
+- **npm** (incluso com o Node.js)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Instalar as dependências
+Abra o terminal na pasta do projeto e execute:
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 2. Iniciar o servidor de desenvolvimento
+Para rodar a aplicação localmente:
+
+```bash
+npm run dev
+```
+
+Após iniciar, o terminal exibirá o endereço de acesso, normalmente:
+`http://localhost:5173` ou `http://localhost:5174`
+
+Abra este link no seu navegador.
+
+---
+
+
+## Guia de telas
+1. **Tela Inicial (Menu)**: Selecione se deseja preencher o formulário do **Dataluta Floresta** ou do **Dataluta Agrário**.
+2. **Preenchimento**: Navegue pelas 8 etapas guiadas com validação de dados em tempo real.
+3. **Retorno**: A qualquer momento, clique no botão **Voltar ao menu** no topo do formulário para retornar à tela de escolha.

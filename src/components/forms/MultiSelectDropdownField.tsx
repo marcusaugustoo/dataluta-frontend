@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
+import { useFormTheme } from '../../context/ThemeContext'
 import type { FieldCopy, Option } from '../../types/form'
 import { cn } from '../../utils/cn'
 import { fieldBaseClasses } from '../ui/Input'
@@ -20,7 +21,7 @@ export interface MultiSelectDropdownFieldProps<TValues extends FieldValues> {
 }
 
 /**
- * Dropdown de seleção múltipla padronizado (42px de altura, cantos rounded-[8px]).
+ * Dropdown de seleção múltipla padronizado adaptável a Floresta e Agrário.
  */
 export function MultiSelectDropdownField<TValues extends FieldValues>({
   control,
@@ -34,6 +35,8 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
   className,
   maxHeight = 'max-h-60',
 }: MultiSelectDropdownFieldProps<TValues>) {
+  const { theme } = useFormTheme()
+  const isAgrario = theme === 'agrario'
   const { field, fieldState } = useController({ control, name })
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -105,7 +108,9 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
           className={cn(
             fieldBaseClasses,
             'flex items-center justify-between text-left cursor-pointer pr-4 transition-all',
-            'hover:border-[#2E7D32] hover:ring-2 hover:ring-[#2E7D32]/15',
+            isAgrario
+              ? 'hover:border-[#B45309] hover:ring-2 hover:ring-[#B45309]/15'
+              : 'hover:border-[#2E7D32] hover:ring-2 hover:ring-[#2E7D32]/15',
             selectedValues.length === 0 && 'text-[#888888]',
           )}
           aria-haspopup="listbox"
@@ -117,7 +122,7 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
           <span
             className={cn(
               'pointer-events-none transition-transform duration-200 text-[#555555]',
-              isOpen && 'rotate-180 text-[#2E7D32]',
+              isOpen && (isAgrario ? 'rotate-180 text-[#B45309]' : 'rotate-180 text-[#2E7D32]'),
             )}
           >
             <ChevronDownIcon />
@@ -144,8 +149,10 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
                   aria-selected={isChecked}
                   className={cn(
                     'flex items-center px-4 py-2 cursor-pointer select-none transition-colors duration-100',
-                    'hover:bg-[#E9F1EA] hover:text-[#2E7D32]',
-                    isChecked ? 'bg-[#F2F7F3]' : '',
+                    isAgrario
+                      ? 'hover:bg-[#FEF3C7] hover:text-[#78350F]'
+                      : 'hover:bg-[#E9F1EA] hover:text-[#2E7D32]',
+                    isChecked ? (isAgrario ? 'bg-[#FFFBEB]' : 'bg-[#F2F7F3]') : '',
                   )}
                   onClick={() => toggleOption(opt.value)}
                 >
@@ -155,13 +162,22 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
                       id={checkId}
                       checked={isChecked}
                       onChange={() => {}}
-                      className="h-4 w-4 rounded border-[#4B4B4B] text-[#2E7D32] focus:ring-[#2E7D32]/20 accent-[#2E7D32] cursor-pointer"
+                      className={cn(
+                        'h-4 w-4 rounded border-[#4B4B4B] cursor-pointer',
+                        isAgrario
+                          ? 'text-[#B45309] focus:ring-[#B45309]/20 accent-[#B45309]'
+                          : 'text-[#2E7D32] focus:ring-[#2E7D32]/20 accent-[#2E7D32]',
+                      )}
                     />
                     <label
                       htmlFor={checkId}
                       className={cn(
                         'text-[14px] cursor-pointer flex-1',
-                        isChecked ? 'font-semibold text-[#17301D]' : 'text-[#222222]',
+                        isChecked
+                          ? isAgrario
+                            ? 'font-semibold text-[#78350F]'
+                            : 'font-semibold text-[#17301D]'
+                          : 'text-[#222222]',
                       )}
                     >
                       {opt.label}
@@ -182,7 +198,12 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
               return (
                 <span
                   key={val}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#2E7D32]/30 bg-[#E9F1EA] px-2.5 py-1 text-[12px] font-medium text-[#17301D] shadow-xs"
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-medium shadow-xs',
+                    isAgrario
+                      ? 'border-[#B45309]/30 bg-[#FEF3C7] text-[#78350F]'
+                      : 'border-[#2E7D32]/30 bg-[#E9F1EA] text-[#17301D]',
+                  )}
                 >
                   <span className="truncate max-w-[280px]">{label}</span>
                   <button
@@ -191,7 +212,12 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
                       e.stopPropagation()
                       toggleOption(val)
                     }}
-                    className="flex h-4 w-4 items-center justify-center rounded-full text-[#2E7D32] hover:bg-[#2E7D32] hover:text-white transition-colors cursor-pointer text-[13px] leading-none"
+                    className={cn(
+                      'flex h-4 w-4 items-center justify-center rounded-full transition-colors cursor-pointer text-[13px] leading-none',
+                      isAgrario
+                        ? 'text-[#B45309] hover:bg-[#B45309] hover:text-white'
+                        : 'text-[#2E7D32] hover:bg-[#2E7D32] hover:text-white',
+                    )}
                     aria-label={`Remover ${label}`}
                     title={`Remover ${label}`}
                   >

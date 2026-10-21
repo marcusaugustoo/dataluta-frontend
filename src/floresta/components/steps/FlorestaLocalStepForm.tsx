@@ -1,26 +1,26 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
-import { brand, copy, options } from '../../data/mockData'
-import { localSchema, type LocalFormInput, type LocalFormValues } from '../../schemas/noticiaSchemas'
-import { cn } from '../../utils/cn'
-import { RequiredLegend } from '../ui/Typography'
-import { MultiSelectDropdownField } from './MultiSelectDropdownField'
-import { RadioGroupField } from './RadioGroupField'
-import { SelectField } from './SelectField'
-import { TextField } from './TextField'
+import { brand, copy, options } from '../../data/florestaData'
+import { localSchema, type LocalFormInput, type LocalFormValues } from '../../schemas/florestaSchemas'
+import { cn } from '../../../utils/cn'
+import { RequiredLegend } from '../../../components/ui/Typography'
+import { MultiSelectDropdownField } from '../../../components/forms/MultiSelectDropdownField'
+import { RadioGroupField } from '../../../components/forms/RadioGroupField'
+import { SelectField } from '../../../components/forms/SelectField'
+import { TextField } from '../../../components/forms/TextField'
 
-export const LOCAL_FORM_ID = 'local-form'
+export const LOCAL_FORM_ID = 'floresta-local-form'
 
-interface LocalStepFormProps {
+interface FlorestaLocalStepFormProps {
   defaultValues?: Partial<LocalFormInput>
   onValid: (values: LocalFormValues) => void
 }
 
 const t = copy.local
 
-/** Etapa 3 — Local com espaçamento padronizado de 16px (space-y-4 / gap-4). */
-export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
-  const { control, handleSubmit, setValue } = useForm<LocalFormInput, unknown, LocalFormValues>({
+export function FlorestaLocalStepForm({ defaultValues, onValid }: FlorestaLocalStepFormProps) {
+  const { control, handleSubmit, setValue, getValues } = useForm<LocalFormInput, unknown, LocalFormValues>({
     resolver: zodResolver(localSchema),
     mode: 'onTouched',
     defaultValues: {
@@ -37,18 +37,33 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
 
   const selectedMacro = useWatch({ control, name: 'macrorregiao' })
 
-  // Regras de exibição dos campos de localização:
-  // - 'internacional' ou 'nacional': não precisa de estado nem de município
-  // - 'estadual': precisa apenas de estado (NÃO precisa de município & código)
-  // - regiões geográficas ('norte', 'nordeste', 'sudeste', 'sul', 'centro-oeste'): precisa de estado e município
   const showEstado = Boolean(selectedMacro) && selectedMacro !== 'internacional' && selectedMacro !== 'nacional'
   const showMunicipio = showEstado && selectedMacro !== 'estadual'
+
+  const filteredEstados = useMemo(() => {
+    const regioesGeograficas = ['norte', 'nordeste', 'sudeste', 'sul', 'centro-oeste']
+    if (selectedMacro && regioesGeograficas.includes(selectedMacro)) {
+      return options.estados.filter((estado) => estado.regiao === selectedMacro)
+    }
+    return options.estados
+  }, [selectedMacro])
+
+  useEffect(() => {
+    const currentEstado = getValues('estado')
+    const regioesGeograficas = ['norte', 'nordeste', 'sudeste', 'sul', 'centro-oeste']
+    if (currentEstado && selectedMacro && regioesGeograficas.includes(selectedMacro)) {
+      const estadoObj = options.estados.find((e) => e.value === currentEstado)
+      if (estadoObj && estadoObj.regiao !== selectedMacro) {
+        setValue('estado', '', { shouldValidate: true })
+        setValue('municipio', '', { shouldValidate: true })
+      }
+    }
+  }, [selectedMacro, getValues, setValue])
 
   return (
     <form id={LOCAL_FORM_ID} noValidate onSubmit={handleSubmit(onValid)} className="space-y-4">
       <RequiredLegend>{brand.requiredLegend}</RequiredLegend>
 
-      {/* Linha com Macrorregião, Estado e Município (16px de diferença: gap-4) */}
       <div
         className={cn(
           'grid grid-cols-1 gap-4',
@@ -63,10 +78,19 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
           placeholder="Selecione a macrorregião"
           onChangeValue={(val) => {
             if (val === 'internacional' || val === 'nacional') {
-              setValue('estado', '')
-              setValue('municipio', '')
+              setValue('estado', '', { shouldValidate: true })
+              setValue('municipio', '', { shouldValidate: true })
             } else if (val === 'estadual') {
-              setValue('municipio', '')
+              setValue('municipio', '', { shouldValidate: true })
+            } else {
+              const currentEstado = getValues('estado')
+              if (currentEstado) {
+                const estadoObj = options.estados.find((e) => e.value === currentEstado)
+                if (estadoObj && estadoObj.regiao !== val) {
+                  setValue('estado', '', { shouldValidate: true })
+                  setValue('municipio', '', { shouldValidate: true })
+                }
+              }
             }
           }}
         />
@@ -76,7 +100,7 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
             control={control}
             name="estado"
             copy={t.estado}
-            options={options.estados}
+            options={filteredEstados}
             placeholder="Selecione o estado"
           />
         )}
@@ -91,14 +115,12 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
         )}
       </div>
 
-      {/* Localidade (16px) */}
       <TextField
         control={control}
         name="localidade"
         copy={t.localidade}
       />
 
-      {/* Ação on-line? (16px) */}
       <RadioGroupField
         control={control}
         name="acaoOnline"
@@ -106,7 +128,6 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
         options={options.acaoOnline}
       />
 
-      {/* Escala da ação (16px) */}
       <MultiSelectDropdownField
         control={control}
         name="escalaAcao"
@@ -115,7 +136,6 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
         placeholder="Selecione as escalas"
       />
 
-      {/* Bioma reivindicado (16px) */}
       <MultiSelectDropdownField
         control={control}
         name="biomas"
@@ -126,3 +146,5 @@ export function LocalStepForm({ defaultValues, onValid }: LocalStepFormProps) {
     </form>
   )
 }
+
+export const LocalStepForm = FlorestaLocalStepForm

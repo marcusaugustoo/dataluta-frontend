@@ -1,17 +1,23 @@
 import { Fragment } from 'react'
-import type { Step, StepId } from '../../types/form'
+import { useFormTheme, type FormTheme } from '../../context/ThemeContext'
+import type { Step } from '../../types/form'
 import { cn } from '../../utils/cn'
 
 interface StepperProps {
   steps: readonly Step[]
-  currentStep: StepId
-  onStepClick?: (id: StepId) => void
+  currentStep: string
+  theme?: FormTheme
+  onStepClick?: (id: any) => void
 }
 
 /**
- * Stepper horizontal com 8 etapas pixel-perfect conforme o Figma.
+ * Stepper horizontal com 8 etapas, adaptável aos temas Floresta e Agrário.
  */
-export function Stepper({ steps, currentStep, onStepClick }: StepperProps) {
+export function Stepper({ steps, currentStep, theme: explicitTheme, onStepClick }: StepperProps) {
+  const { theme: contextTheme } = useFormTheme()
+  const theme = explicitTheme ?? contextTheme
+  const isAgrario = theme === 'agrario'
+
   return (
     <nav aria-label="Etapas do formulário" className="w-full">
       <ol className="flex w-full items-center justify-between">
@@ -33,8 +39,12 @@ export function Stepper({ steps, currentStep, onStepClick }: StepperProps) {
                     className={cn(
                       'flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-semibold transition-all duration-150',
                       isActive
-                        ? 'bg-[#2E7D32] text-white'
-                        : 'border-[1.5px] border-[#2E7D32] bg-white text-[#2E7D32] group-hover:bg-[#E9F1EA]',
+                        ? isAgrario
+                          ? 'bg-[#B45309] text-white shadow-sm'
+                          : 'bg-[#2E7D32] text-white'
+                        : isAgrario
+                          ? 'border-[1.5px] border-[#B45309] bg-white text-[#B45309] group-hover:bg-[#FEF3C7]'
+                          : 'border-[1.5px] border-[#2E7D32] bg-white text-[#2E7D32] group-hover:bg-[#E9F1EA]',
                     )}
                   >
                     {step.order}
@@ -60,3 +70,4 @@ export function Stepper({ steps, currentStep, onStepClick }: StepperProps) {
     </nav>
   )
 }
+

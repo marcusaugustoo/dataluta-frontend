@@ -1,27 +1,32 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import odsGridImg from '../../assets/images/ods-grid.png'
-import { brand, copy, options } from '../../data/mockData'
-import { odsSchema, type OdsFormInput, type OdsFormValues } from '../../schemas/noticiaSchemas'
-import { RequiredLegend, Text } from '../ui/Typography'
-import { MultiSelectDropdownField } from './MultiSelectDropdownField'
+import odsGridImg from '../../../assets/images/ods-grid.png'
+import { brand, copy, options } from '../../data/agrarioData'
+import {
+  odsSchema,
+  type AgrarioOdsFormInput,
+  type AgrarioOdsFormValues,
+} from '../../schemas/agrarioSchemas'
+import { MultiSelectDropdownField } from '../../../components/forms/MultiSelectDropdownField'
+import { RequiredLegend, Text } from '../../../components/ui/Typography'
 
-export const ODS_FORM_ID = 'ods-form'
+export const AGRARIO_ODS_FORM_ID = 'agrario-ods-form'
 
-interface OdsStepFormProps {
-  defaultValues?: Partial<OdsFormInput>
-  onValid: (values: OdsFormValues) => void
+interface AgrarioOdsStepFormProps {
+  defaultValues?: Partial<AgrarioOdsFormInput>
+  onValid: (values: AgrarioOdsFormValues) => void
 }
 
 const t = copy.ods
 
-/**
- * Etapa 8 — ODS: seleção realizada apenas no campo MultiSelect
- * e seção de consulta simples exibindo qual é cada ODS e seu link original.
- */
-export function OdsStepForm({ defaultValues, onValid }: OdsStepFormProps) {
-  const { control, handleSubmit } = useForm<OdsFormInput, unknown, OdsFormValues>({
+
+export function AgrarioOdsStepForm({ defaultValues, onValid }: AgrarioOdsStepFormProps) {
+  const { control, handleSubmit } = useForm<
+    AgrarioOdsFormInput,
+    unknown,
+    AgrarioOdsFormValues
+  >({
     resolver: zodResolver(odsSchema),
     mode: 'onTouched',
     defaultValues: {
@@ -33,10 +38,14 @@ export function OdsStepForm({ defaultValues, onValid }: OdsStepFormProps) {
   const [showImage, setShowImage] = useState(false)
 
   return (
-    <form id={ODS_FORM_ID} noValidate onSubmit={handleSubmit(onValid)} className="space-y-4">
+    <form
+      id={AGRARIO_ODS_FORM_ID}
+      noValidate
+      onSubmit={handleSubmit(onValid)}
+      className="space-y-4"
+    >
       <RequiredLegend>{brand.requiredLegend}</RequiredLegend>
 
-      {/* Seleção de ODS realizada apenas no campo */}
       <MultiSelectDropdownField
         control={control}
         name="objetivos"
@@ -45,7 +54,6 @@ export function OdsStepForm({ defaultValues, onValid }: OdsStepFormProps) {
         placeholder="Selecione os ODS"
       />
 
-      {/* Seção apenas para consulta: lista dos ODS com seu link original */}
       <div className="space-y-3 pt-2 border-t border-[#F0F0F0]">
         <div className="flex items-center justify-between">
           <Text variant="body" className="font-semibold text-[#222222]">
@@ -55,15 +63,14 @@ export function OdsStepForm({ defaultValues, onValid }: OdsStepFormProps) {
           <button
             type="button"
             onClick={() => setShowImage((prev) => !prev)}
-            className="text-[12px] font-semibold text-[#2E7D32] hover:text-[#17301D] hover:underline cursor-pointer"
+            className="text-[12px] font-semibold text-[#B45309] hover:text-[#78350F] hover:underline cursor-pointer"
           >
             {showImage ? 'Ocultar imagem' : 'Ver imagem ilustrativa'}
           </button>
         </div>
 
-        {/* Imagem ilustrativa opcional */}
         {showImage && (
-          <div className="flex justify-center p-3 rounded-xl bg-[#F8FAF8] border border-[#E0E0E0] animate-fadeIn">
+          <div className="flex justify-center p-3 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] animate-fadeIn">
             <img
               src={odsGridImg}
               alt="Objetivos de Desenvolvimento Sustentável (ODS da ONU)"
@@ -72,14 +79,12 @@ export function OdsStepForm({ defaultValues, onValid }: OdsStepFormProps) {
           </div>
         )}
 
-        {/* Lista simples exclusivamente para consulta: qual é o ODS e o link original */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {options.ods.map((item) => (
             <div
               key={item.value}
               className="flex items-center justify-between px-3 py-2 rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] transition-colors"
             >
-              {/* Qual é o ODS (número colorido + título) */}
               <div className="flex items-center gap-2.5 min-w-0 pr-2">
                 <span
                   style={{ backgroundColor: item.color }}
@@ -92,12 +97,11 @@ export function OdsStepForm({ defaultValues, onValid }: OdsStepFormProps) {
                 </span>
               </div>
 
-              {/* Link original */}
               <a
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="shrink-0 inline-flex items-center gap-1 text-[12px] font-bold text-[#2E7D32] hover:text-[#17301D] hover:underline pl-2"
+                className="shrink-0 inline-flex items-center gap-1 text-[12px] font-bold text-[#B45309] hover:text-[#78350F] hover:underline pl-2"
                 title={`Abrir página oficial do ODS ${item.number} na ONU Brasil`}
               >
                 <span>Link original</span>

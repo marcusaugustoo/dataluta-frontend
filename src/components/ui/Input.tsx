@@ -5,7 +5,7 @@ import { cn } from '../../utils/cn'
 export const fieldBaseClasses =
   'w-full h-[42px] rounded-[8px] border border-[#4B4B4B] bg-white px-3.5 text-[15px] text-[#222222] ' +
   'placeholder:text-[#888888] transition-colors duration-150 ' +
-  'focus:border-[#2E7D32] focus:outline-none focus:ring-1 focus:ring-[#2E7D32] ' +
+  'focus:border-[var(--theme-primary,#2E7D32)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-primary,#2E7D32)] ' +
   'disabled:cursor-not-allowed disabled:bg-[#F5F5F5] disabled:text-[#888888] ' +
   'aria-[invalid=true]:border-[#D32F2F] aria-[invalid=true]:focus:ring-[#D32F2F]'
 

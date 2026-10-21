@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
+import { useFormTheme } from '../../context/ThemeContext'
 import type { FieldCopy, Option } from '../../types/form'
 import { cn } from '../../utils/cn'
 import { ChevronDownIcon } from '../ui/icons'
@@ -22,8 +23,7 @@ export interface SelectFieldProps<TValues extends FieldValues> {
 }
 
 /**
- * Campo Select customizado com hover verde (#E9F1EA / #2E7D32) em cada item
- * e na borda do gatilho, integrado ao React Hook Form.
+ * Campo Select customizado adaptável aos temas Floresta e Agrário.
  */
 export function SelectField<TValues extends FieldValues>({
   control,
@@ -38,6 +38,8 @@ export function SelectField<TValues extends FieldValues>({
   disabled = false,
   onChangeValue,
 }: SelectFieldProps<TValues>) {
+  const { theme } = useFormTheme()
+  const isAgrario = theme === 'agrario'
   const { field, fieldState } = useController({ control, name })
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -93,7 +95,9 @@ export function SelectField<TValues extends FieldValues>({
           className={cn(
             fieldBaseClasses,
             'flex items-center justify-between text-left cursor-pointer pr-3.5 transition-all select-none',
-            'hover:border-[#2E7D32] hover:ring-2 hover:ring-[#2E7D32]/15',
+            isAgrario
+              ? 'hover:border-[#B45309] hover:ring-2 hover:ring-[#B45309]/15'
+              : 'hover:border-[#2E7D32] hover:ring-2 hover:ring-[#2E7D32]/15',
             !field.value && 'text-[#888888]',
             disabled && 'opacity-50 cursor-not-allowed hover:border-[#4B4B4B]',
           )}
@@ -108,7 +112,7 @@ export function SelectField<TValues extends FieldValues>({
           <span
             className={cn(
               'pointer-events-none transition-transform duration-200 text-[#555555]',
-              isOpen && 'rotate-180 text-[#2E7D32]',
+              isOpen && (isAgrario ? 'rotate-180 text-[#B45309]' : 'rotate-180 text-[#2E7D32]'),
             )}
           >
             <ChevronDownIcon />
@@ -131,13 +135,24 @@ export function SelectField<TValues extends FieldValues>({
                   onClick={() => handleSelect(opt.value)}
                   className={cn(
                     'group flex items-center px-4 py-2.5 text-[14px] cursor-pointer select-none transition-colors duration-150',
-                    'hover:bg-[#2E7D32] hover:text-white',
-                    isSelected ? 'bg-[#E9F1EA] font-semibold text-[#2E7D32]' : 'text-[#222222]',
+                    isAgrario ? 'hover:bg-[#B45309] hover:text-white' : 'hover:bg-[#2E7D32] hover:text-white',
+                    isSelected
+                      ? isAgrario
+                        ? 'bg-[#FEF3C7] font-semibold text-[#78350F]'
+                        : 'bg-[#E9F1EA] font-semibold text-[#2E7D32]'
+                      : 'text-[#222222]',
                   )}
                 >
                   <span className="flex-1">{opt.label}</span>
                   {isSelected && (
-                    <span className="text-[13px] font-bold group-hover:text-white text-[#2E7D32]">✓</span>
+                    <span
+                      className={cn(
+                        'text-[13px] font-bold group-hover:text-white',
+                        isAgrario ? 'text-[#B45309]' : 'text-[#2E7D32]',
+                      )}
+                    >
+                      ✓
+                    </span>
                   )}
                 </li>
               )

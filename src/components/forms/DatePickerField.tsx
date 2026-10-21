@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react'
 import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
+import { useFormTheme } from '../../context/ThemeContext'
 import type { FieldCopy } from '../../types/form'
 import { cn } from '../../utils/cn'
 import { CalendarIcon } from '../ui/icons'
@@ -77,6 +78,8 @@ export function DatePickerField<TValues extends FieldValues>({
   className,
   placeholder = 'dd/mm/aaaa',
 }: DatePickerFieldProps<TValues>) {
+  const { theme } = useFormTheme()
+  const isAgrario = theme === 'agrario'
   const { field, fieldState } = useController({ control, name })
   const [isOpen, setIsOpen] = useState(false)
   const [textValue, setTextValue] = useState(() => toDisplayFormat(field.value))
@@ -205,14 +208,19 @@ export function DatePickerField<TValues extends FieldValues>({
             className={cn(
               fieldBaseClasses,
               'w-full pr-10 cursor-pointer select-none transition-all',
-              'hover:border-[#2E7D32] hover:ring-2 hover:ring-[#2E7D32]/15',
+              isAgrario
+                ? 'hover:border-[#B45309] hover:ring-2 hover:ring-[#B45309]/15'
+                : 'hover:border-[#2E7D32] hover:ring-2 hover:ring-[#2E7D32]/15',
               !textValue && 'placeholder:text-[#888888]',
             )}
           />
           <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
-            className="absolute right-3 text-[#555555] hover:text-[#2E7D32] transition-colors cursor-pointer p-1"
+            className={cn(
+              'absolute right-3 transition-colors cursor-pointer p-1',
+              isAgrario ? 'text-[#555555] hover:text-[#B45309]' : 'text-[#555555] hover:text-[#2E7D32]',
+            )}
             title="Abrir calendário"
             aria-label="Abrir calendário"
           >
@@ -227,7 +235,10 @@ export function DatePickerField<TValues extends FieldValues>({
               <button
                 type="button"
                 onClick={handlePrevMonth}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-[#555555] hover:bg-[#E9F1EA] hover:text-[#2E7D32] transition-colors cursor-pointer shrink-0 font-bold"
+                className={cn(
+                  'flex h-7 w-7 items-center justify-center rounded-full transition-colors cursor-pointer shrink-0 font-bold',
+                  isAgrario ? 'text-[#555555] hover:bg-[#FEF3C7] hover:text-[#B45309]' : 'text-[#555555] hover:bg-[#E9F1EA] hover:text-[#2E7D32]',
+                )}
                 aria-label="Mês anterior"
                 title="Mês anterior"
               >
@@ -238,7 +249,12 @@ export function DatePickerField<TValues extends FieldValues>({
                 <select
                   value={month}
                   onChange={(e) => handleMonthChange(Number(e.target.value))}
-                  className="rounded-md border border-[#E0E0E0] bg-white px-2 py-1 text-[13px] font-semibold text-[#17301D] hover:border-[#2E7D32] focus:outline-hidden focus:ring-1 focus:ring-[#2E7D32] cursor-pointer"
+                  className={cn(
+                    'rounded-md border border-[#E0E0E0] bg-white px-2 py-1 text-[13px] font-semibold cursor-pointer',
+                    isAgrario
+                      ? 'text-[#78350F] hover:border-[#B45309] focus:outline-hidden focus:ring-1 focus:ring-[#B45309]'
+                      : 'text-[#17301D] hover:border-[#2E7D32] focus:outline-hidden focus:ring-1 focus:ring-[#2E7D32]',
+                  )}
                 >
                   {MONTH_NAMES.map((name, idx) => (
                     <option key={name} value={idx}>
@@ -250,7 +266,12 @@ export function DatePickerField<TValues extends FieldValues>({
                 <select
                   value={year}
                   onChange={(e) => handleYearChange(Number(e.target.value))}
-                  className="rounded-md border border-[#E0E0E0] bg-white px-2 py-1 text-[13px] font-semibold text-[#17301D] hover:border-[#2E7D32] focus:outline-hidden focus:ring-1 focus:ring-[#2E7D32] cursor-pointer"
+                  className={cn(
+                    'rounded-md border border-[#E0E0E0] bg-white px-2 py-1 text-[13px] font-semibold cursor-pointer',
+                    isAgrario
+                      ? 'text-[#78350F] hover:border-[#B45309] focus:outline-hidden focus:ring-1 focus:ring-[#B45309]'
+                      : 'text-[#17301D] hover:border-[#2E7D32] focus:outline-hidden focus:ring-1 focus:ring-[#2E7D32]',
+                  )}
                 >
                   {YEARS.map((y) => (
                     <option key={y} value={y}>
@@ -263,7 +284,10 @@ export function DatePickerField<TValues extends FieldValues>({
               <button
                 type="button"
                 onClick={handleNextMonth}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-[#555555] hover:bg-[#E9F1EA] hover:text-[#2E7D32] transition-colors cursor-pointer shrink-0 font-bold"
+                className={cn(
+                  'flex h-7 w-7 items-center justify-center rounded-full transition-colors cursor-pointer shrink-0 font-bold',
+                  isAgrario ? 'text-[#555555] hover:bg-[#FEF3C7] hover:text-[#B45309]' : 'text-[#555555] hover:bg-[#E9F1EA] hover:text-[#2E7D32]',
+                )}
                 aria-label="Próximo mês"
                 title="Próximo mês"
               >
@@ -305,10 +329,16 @@ export function DatePickerField<TValues extends FieldValues>({
                     className={cn(
                       'flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-medium transition-colors cursor-pointer mx-auto',
                       isSelected
-                        ? 'bg-[#2E7D32] text-white font-bold shadow-xs'
+                        ? isAgrario
+                          ? 'bg-[#B45309] text-white font-bold shadow-xs'
+                          : 'bg-[#2E7D32] text-white font-bold shadow-xs'
                         : isToday
-                          ? 'border border-[#2E7D32] text-[#2E7D32] font-semibold hover:bg-[#2E7D32] hover:text-white'
-                          : 'text-[#333333] hover:bg-[#2E7D32] hover:text-white',
+                          ? isAgrario
+                            ? 'border border-[#B45309] text-[#B45309] font-semibold hover:bg-[#B45309] hover:text-white'
+                            : 'border border-[#2E7D32] text-[#2E7D32] font-semibold hover:bg-[#2E7D32] hover:text-white'
+                          : isAgrario
+                            ? 'text-[#333333] hover:bg-[#B45309] hover:text-white'
+                            : 'text-[#333333] hover:bg-[#2E7D32] hover:text-white',
                     )}
                   >
                     {day}
@@ -341,7 +371,10 @@ export function DatePickerField<TValues extends FieldValues>({
                   setViewDate(today)
                   setIsOpen(false)
                 }}
-                className="text-[11px] font-semibold text-[#2E7D32] hover:underline cursor-pointer"
+                className={cn(
+                  'text-[11px] font-semibold hover:underline cursor-pointer',
+                  isAgrario ? 'text-[#B45309]' : 'text-[#2E7D32]',
+                )}
               >
                 Selecionar Hoje
               </button>

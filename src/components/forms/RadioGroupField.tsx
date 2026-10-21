@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from 'react'
 import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
+import { useFormTheme } from '../../context/ThemeContext'
 import type { FieldCopy, Option } from '../../types/form'
 import { cn } from '../../utils/cn'
 import { FieldLabel, Text } from '../ui/Typography'
@@ -16,7 +17,7 @@ export interface RadioGroupFieldProps<TValues extends FieldValues> {
 }
 
 /**
- * Grupo de Radio Buttons fiel ao design (círculos 20px, texto 16px).
+ * Grupo de Radio Buttons fiel ao design adaptável a Floresta e Agrário.
  */
 export function RadioGroupField<TValues extends FieldValues>({
   control,
@@ -28,6 +29,8 @@ export function RadioGroupField<TValues extends FieldValues>({
   helperText,
   className,
 }: RadioGroupFieldProps<TValues>) {
+  const { theme } = useFormTheme()
+  const isAgrario = theme === 'agrario'
   const { field, fieldState } = useController({ control, name })
   const autoId = useId()
   const groupId = `${String(name)}-${autoId}`
@@ -71,11 +74,18 @@ export function RadioGroupField<TValues extends FieldValues>({
               <span
                 className={cn(
                   'flex h-5 w-5 items-center justify-center rounded-full border border-ink transition-colors',
-                  isSelected && 'border-brand',
+                  isSelected && (isAgrario ? 'border-[#B45309]' : 'border-[#2E7D32]'),
                 )}
                 aria-hidden="true"
               >
-                {isSelected && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
+                {isSelected && (
+                  <span
+                    className={cn(
+                      'h-2.5 w-2.5 rounded-full',
+                      isAgrario ? 'bg-[#B45309]' : 'bg-[#2E7D32]',
+                    )}
+                  />
+                )}
               </span>
               <span className="text-body text-ink">{opt.label}</span>
             </label>

@@ -1,24 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { brand, copy } from '../../data/mockData'
-import { loginSchema, type LoginFormInput, type LoginFormValues } from '../../schemas/noticiaSchemas'
-import { RequiredLegend, RequiredMark } from '../ui/Typography'
-import { CodeGuide } from './CodeGuide'
-import { TextField } from './TextField'
+import { brand, copy } from '../../data/florestaData'
+import { loginSchema, type LoginFormInput, type LoginFormValues } from '../../schemas/florestaSchemas'
+import { RequiredLegend, RequiredMark } from '../../../components/ui/Typography'
+import { FlorestaCodeGuide } from '../FlorestaCodeGuide'
+import { TextField } from '../../../components/forms/TextField'
 
-export const LOGIN_FORM_ID = 'login-form'
+export const LOGIN_FORM_ID = 'floresta-login-form'
 
-interface LoginStepFormProps {
+interface FlorestaLoginStepFormProps {
   defaultValues?: Partial<LoginFormInput>
   onValid: (values: LoginFormValues) => void
 }
 
 const t = copy.login
 
-/**
- * Etapa 1 — Login com espaçamento estrito de 16px (gap-4 / space-y-4) entre campos.
- */
-export function LoginStepForm({ defaultValues, onValid }: LoginStepFormProps) {
+export function FlorestaLoginStepForm({ defaultValues, onValid }: FlorestaLoginStepFormProps) {
   const { control, handleSubmit } = useForm<LoginFormInput, unknown, LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onTouched',
@@ -35,7 +32,6 @@ export function LoginStepForm({ defaultValues, onValid }: LoginStepFormProps) {
     <form id={LOGIN_FORM_ID} noValidate onSubmit={handleSubmit(onValid)} className="space-y-4">
       <RequiredLegend>{brand.requiredLegend}</RequiredLegend>
 
-      {/* Nome do responsável (Nome e Sobrenome com 16px de espaçamento) */}
       <div>
         <div className="text-[16px] font-medium text-[#222222]">
           {t.responsavel.label}
@@ -59,7 +55,6 @@ export function LoginStepForm({ defaultValues, onValid }: LoginStepFormProps) {
         </div>
       </div>
 
-      {/* E-mail (16px de diferença) */}
       <div>
         <TextField
           control={control}
@@ -70,7 +65,6 @@ export function LoginStepForm({ defaultValues, onValid }: LoginStepFormProps) {
         />
       </div>
 
-      {/* Código da notícia (16px de diferença) */}
       <div>
         <TextField
           control={control}
@@ -81,7 +75,7 @@ export function LoginStepForm({ defaultValues, onValid }: LoginStepFormProps) {
         />
 
         <div className="mt-2.5">
-          <CodeGuide
+          <FlorestaCodeGuide
             title={t.codeGuide.title}
             segments={t.codeGuide.segments}
             example={t.codeGuide.example}
@@ -91,3 +85,5 @@ export function LoginStepForm({ defaultValues, onValid }: LoginStepFormProps) {
     </form>
   )
 }
+
+export const LoginStepForm = FlorestaLoginStepForm

@@ -1,12 +1,12 @@
-import type { CodeSegment } from '../../types/form'
+import type { CodeSegment } from '../types/florestaTypes'
 
-interface CodeGuideProps {
+interface FlorestaCodeGuideProps {
   title: string
   segments: readonly CodeSegment[]
   example: string
 }
 
-export function CodeGuide({ title, segments, example }: CodeGuideProps) {
+export function FlorestaCodeGuide({ title, segments, example }: FlorestaCodeGuideProps) {
   return (
     <aside
       aria-label={title}
@@ -39,3 +39,5 @@ export function CodeGuide({ title, segments, example }: CodeGuideProps) {
     </aside>
   )
 }
+
+export const CodeGuide = FlorestaCodeGuide

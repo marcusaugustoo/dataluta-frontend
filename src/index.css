@@ -2,15 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --theme-primary: #2E7D32;
+  --theme-primary-hover: #256829;
+  --theme-accent: #E9F1EA;
+}
+
+.theme-floresta {
+  --theme-primary: #2E7D32;
+  --theme-primary-hover: #256829;
+  --theme-accent: #E9F1EA;
+}
+
+.theme-agrario {
+  --theme-primary: #B45309;
+  --theme-primary-hover: #92400E;
+  --theme-accent: #FEF3C7;
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #17301D;
+    background-color: #ffffff;
   }
 
   body {
-    background-color: #17301D;
+    background-color: #ffffff;
     color: #333333;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     margin: 0;
@@ -18,3 +36,4 @@
     min-height: 100vh;
   }
 }
+
