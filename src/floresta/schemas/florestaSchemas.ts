@@ -72,16 +72,34 @@ export const localSchema = z
     }
   })
 
-export const acaoSchema = z.object({
-  acaoMatriz: requiredText('Selecione a Ação Matriz'),
-  acaoDerivada: requiredText('Selecione a Ação derivada'),
-  sugestao: z.string().optional(),
-  modalidades: z.array(z.string()).optional().default([]),
-  finalidades: z.array(z.string()).min(1, 'Selecione ao menos uma finalidade'),
-  dataInicial: z.string().optional(),
-  dataFinal: z.string().optional(),
-  dataIncompleta: z.string().optional(),
-})
+export const acaoSchema = z
+  .object({
+    acaoMatriz: requiredText('Selecione a Ação Matriz'),
+    acaoDerivada: z.string().optional(),
+    sugestao: z.string().optional(),
+    modalidades: z.array(z.string()).optional().default([]),
+    finalidades: z.array(z.string()).min(1, 'Selecione ao menos uma finalidade'),
+    dataInicial: z.string().optional(),
+    dataFinal: z.string().optional(),
+    dataIncompleta: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const matrizObj = options.acoesMatriz.find((m) => m.value === data.acaoMatriz)
+    if (matrizObj && matrizObj.derivadas.length > 0 && (!data.acaoDerivada || !data.acaoDerivada.trim())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Selecione a Ação derivada',
+        path: ['acaoDerivada'],
+      })
+    }
+    if (data.dataInicial && data.dataFinal && data.dataFinal < data.dataInicial) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'A data final não pode ser anterior à data inicial',
+        path: ['dataFinal'],
+      })
+    }
+  })
 
 export const pautaSchema = z.object({
   pautasAmplas: z.array(z.string()).min(1, 'Selecione as pautas amplas'),

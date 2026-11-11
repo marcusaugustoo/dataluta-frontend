@@ -1,14 +1,42 @@
+import { useState } from 'react'
+import { SubmissionHistoryDrawer } from '../components/history/SubmissionHistoryDrawer'
+
 interface HubHomePageProps {
   onSelectForm: (form: 'floresta' | 'agrario') => void
 }
 
 export function HubHomePage({ onSelectForm }: HubHomePageProps) {
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+
   return (
     <div className="min-h-screen w-full bg-white text-[#111111] flex flex-col justify-between px-6 py-8 md:px-12 md:py-10 selection:bg-gray-100">
-      <header className="w-full">
+      <header className="w-full flex items-center justify-between gap-4">
         <span className="font-extrabold text-[15px] md:text-[16px] tracking-wider text-[#111111] uppercase select-none">
           DATALUTA
         </span>
+
+        <button
+          type="button"
+          onClick={() => setIsHistoryOpen(true)}
+          className="inline-flex items-center gap-2 rounded-[10px] border border-[#E5E7EB] bg-white px-4 py-2 text-[13px] md:text-[14px] font-medium text-[#111111] shadow-2xs transition-all hover:border-gray-300 hover:bg-gray-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-200"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="text-[#4B5563] shrink-0"
+          >
+            <path
+              d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>Histórico de submissões</span>
+        </button>
       </header>
 
       <main className="my-auto w-full max-w-4xl mx-auto flex flex-col items-center text-center py-12">
@@ -82,6 +110,11 @@ export function HubHomePage({ onSelectForm }: HubHomePageProps) {
           Banco de Dados da Luta pela Terra - UNESP
         </p>
       </footer>
+
+      <SubmissionHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+      />
     </div>
   )
 }

@@ -19,8 +19,8 @@ export function Stepper({ steps, currentStep, theme: explicitTheme, onStepClick 
   const isAgrario = theme === 'agrario'
 
   return (
-    <nav aria-label="Etapas do formulário" className="w-full">
-      <ol className="flex w-full items-center justify-between">
+    <nav aria-label="Etapas do formulário" className="w-full overflow-x-auto pb-1">
+      <ol className="flex w-full min-w-[640px] items-center justify-between">
         {steps.map((step, index) => {
           const isActive = step.id === currentStep
 

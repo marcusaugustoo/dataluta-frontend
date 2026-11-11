@@ -80,7 +80,7 @@ export interface AgrarioSubmission {
   }
   acao: {
     acaoMatriz: string
-    acaoDerivada: string
+    acaoDerivada?: string
     finalidade: string[]
     dataInicial?: string
     dataFinal?: string

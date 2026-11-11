@@ -9,7 +9,7 @@ import type {
   Ods,
   Option,
 } from '../types/agrarioTypes'
-import { odsData } from '../../data/mockData'
+import { odsData } from '../../floresta/data/florestaData'
 import { slugify } from '../../utils/slugify'
 
 const toOptions = (labels: readonly string[]): Option[] =>
@@ -481,7 +481,7 @@ export const exampleAgrarioSubmission: AgrarioSubmission = {
   instituicoes: {
     aliada: {
       tipos: ['sindicato-de-trabalhadores', 'igreja-movimento-religioso-pastoral'],
-      nomes: ['comissao-pastoral-da-terra-cpt'],
+      nomes: ['instituto-nacional-de-colonizacao-e-reforma-agraria-incra'],
     },
     opositora: {
       tipos: ['empresa-agroindustria'],

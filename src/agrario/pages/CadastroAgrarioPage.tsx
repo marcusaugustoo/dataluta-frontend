@@ -38,6 +38,7 @@ import {
 } from '../components/steps/AgrarioPautaStepForm'
 import { actions, brand, steps } from '../data/agrarioData'
 import type { AgrarioStepId, AgrarioSubmission } from '../types/agrarioTypes'
+import { enviarNoticia } from '../../services/noticiasService'
 
 interface CadastroAgrarioPageProps {
   onBackToHome?: () => void
@@ -47,17 +48,55 @@ export function CadastroAgrarioPage({ onBackToHome }: CadastroAgrarioPageProps) 
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [formData, setFormData] = useState<Partial<AgrarioSubmission>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const currentStep = steps[currentStepIndex]
   const isFirstStep = currentStepIndex === 0
   const isLastStep = currentStepIndex === steps.length - 1
 
   const handleNext = () => {
+    setSubmitError(null)
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else {
+    }
+  }
+
+  const handleFinalSubmit = async (odsVals: AgrarioSubmission['ods']) => {
+    const requiredSteps: Array<{ key: keyof AgrarioSubmission; label: string; index: number }> = [
+      { key: 'login', label: 'Login', index: 0 },
+      { key: 'noticia', label: 'Notícia', index: 1 },
+      { key: 'local', label: 'Local', index: 2 },
+      { key: 'acao', label: 'Ação', index: 3 },
+      { key: 'pauta', label: 'Pauta', index: 4 },
+      { key: 'movimento', label: 'Movimento', index: 5 },
+      { key: 'instituicoes', label: 'Instituições', index: 6 },
+    ]
+    const missingStep = requiredSteps.find((s) => !formData[s.key])
+    if (missingStep) {
+      setFormData((prev) => ({ ...prev, ods: odsVals }))
+      setCurrentStepIndex(missingStep.index)
+      setSubmitError(`Preencha e confirme a etapa "${missingStep.label}" antes de enviar.`)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    const payload = { ...formData, ods: odsVals } as AgrarioSubmission
+    setFormData(payload)
+    setSubmitError(null)
+    setIsSubmitting(true)
+
+    try {
+      await enviarNoticia('agrario', payload)
       setIsSubmitted(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Erro ao enviar notícia.'
+      setSubmitError(message)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -92,8 +131,12 @@ export function CadastroAgrarioPage({ onBackToHome }: CadastroAgrarioPageProps) 
   if (isSubmitted) {
     return (
       <ThemeProvider theme="agrario">
+        <div
+          className="fixed inset-0 -z-10 bg-gradient-to-br from-[#1C1108] via-[#2B1B10] to-[#140C07]"
+          aria-hidden="true"
+        />
         <main className="theme-agrario flex min-h-screen items-center justify-center bg-gradient-to-br from-[#1C1108] via-[#2B1B10] to-[#140C07] p-6">
-          <div className="w-full max-w-xl rounded-[28px] bg-white p-8 text-center shadow-2xl">
+          <div className="w-full max-w-[520px] rounded-[28px] bg-white p-8 text-center shadow-2xl">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FEF3C7] text-[#B45309]">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
                 <path
@@ -106,21 +149,30 @@ export function CadastroAgrarioPage({ onBackToHome }: CadastroAgrarioPageProps) 
               </svg>
             </div>
             <Text variant="display" className="mt-4 text-[#222222]">
-              Notícia Agrária Cadastrada com Sucesso!
-            </Text>
-            <Text variant="body" className="mt-2 text-[#666666]">
-              Os dados foram validados conforme as diretrizes do DATALUTA Agrário.
+              Notícia Cadastrada com Sucesso!
             </Text>
 
-            <pre className="mt-5 max-h-56 overflow-y-auto rounded-lg bg-[#FFFBEB] border border-[#FDE68A] p-4 text-left text-xs text-[#333333]">
-              {JSON.stringify(formData, null, 2)}
-            </pre>
+            {formData.noticia?.titulo && (
+              <div className="mt-4 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] px-4 py-3.5 text-center">
+                <p className="text-[15px] font-semibold text-[#222222]">
+                  {formData.noticia.titulo}
+                </p>
+                {(formData.login?.codigoNoticia || formData.noticia.fonte) && (
+                  <p className="mt-1 text-[13px] text-[#666666]">
+                    {[formData.login?.codigoNoticia, formData.noticia.fonte]
+                      .filter(Boolean)
+                      .join(' • ')}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Button
                 variant="primary"
                 onClick={() => {
                   setIsSubmitted(false)
+                  setSubmitError(null)
                   setCurrentStepIndex(0)
                   setFormData({})
                 }}
@@ -142,7 +194,11 @@ export function CadastroAgrarioPage({ onBackToHome }: CadastroAgrarioPageProps) 
 
   return (
     <ThemeProvider theme="agrario">
-      <main className="theme-agrario min-h-screen bg-gradient-to-br from-[#1C1108] via-[#2B1B10] to-[#140C07] px-4 py-8 md:py-12 flex flex-col items-center justify-center">
+      <div
+        className="fixed inset-0 -z-10 bg-gradient-to-br from-[#1C1108] via-[#2B1B10] to-[#140C07]"
+        aria-hidden="true"
+      />
+      <main className="theme-agrario min-h-screen bg-gradient-to-br from-[#1C1108] via-[#2B1B10] to-[#140C07] px-4 pt-8 pb-28 md:pt-12 md:pb-32 flex flex-col items-center justify-center">
         <FormCard
           brand={brand}
           steps={steps}
@@ -171,12 +227,22 @@ export function CadastroAgrarioPage({ onBackToHome }: CadastroAgrarioPageProps) 
                 form={getActiveFormId()}
                 variant="primary"
                 withArrow={!isLastStep}
+                disabled={isSubmitting}
               >
-                {isLastStep ? actions.submit : actions.next}
+                {isLastStep ? (isSubmitting ? 'ENVIANDO...' : actions.submit) : actions.next}
               </Button>
             </>
           }
         >
+          {submitError && (
+            <div
+              role="alert"
+              className="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800"
+            >
+              <strong>Erro ao salvar no banco:</strong> {submitError}
+            </div>
+          )}
+
           {currentStep.id === 'login' && (
             <AgrarioLoginStepForm
               defaultValues={formData.login}
@@ -251,8 +317,7 @@ export function CadastroAgrarioPage({ onBackToHome }: CadastroAgrarioPageProps) 
             <AgrarioOdsStepForm
               defaultValues={formData.ods}
               onValid={(vals) => {
-                setFormData((prev) => ({ ...prev, ods: vals }))
-                handleNext()
+                void handleFinalSubmit(vals)
               }}
             />
           )}

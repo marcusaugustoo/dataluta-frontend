@@ -75,7 +75,7 @@ export interface NoticiaSubmission {
   }
   acao: {
     acaoMatriz: string
-    acaoDerivada: string
+    acaoDerivada?: string
     sugestao?: string
     modalidades: string[]
     finalidades: string[]

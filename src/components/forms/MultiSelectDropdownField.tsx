@@ -134,7 +134,7 @@ export function MultiSelectDropdownField<TValues extends FieldValues>({
             role="listbox"
             aria-multiselectable="true"
             className={cn(
-              'absolute z-50 mt-1 w-full overflow-y-auto rounded-[8px] border border-[#D5D5D5] bg-white py-1 shadow-lg',
+              'absolute z-50 mt-1 w-full overflow-y-auto overscroll-contain rounded-[8px] border border-[#D5D5D5] bg-white py-1 shadow-lg',
               maxHeight,
             )}
           >

@@ -122,7 +122,7 @@ export function SelectField<TValues extends FieldValues>({
         {isOpen && (
           <ul
             role="listbox"
-            className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-[8px] border border-[#D5D5D5] bg-white py-1 shadow-lg"
+            className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto overscroll-contain rounded-[8px] border border-[#D5D5D5] bg-white py-1 shadow-lg"
           >
             {options.map((opt) => {
               const isSelected = opt.value === field.value

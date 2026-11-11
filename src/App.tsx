@@ -1,7 +1,14 @@
-import { useEffect, useState } from 'react'
-import { CadastroAgrarioPage } from './agrario/pages/CadastroAgrarioPage'
-import { CadastroFlorestaPage } from './floresta/pages/CadastroFlorestaPage'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { HubHomePage } from './pages/HubHomePage'
+
+const CadastroAgrarioPage = lazy(() =>
+  import('./agrario/pages/CadastroAgrarioPage').then((m) => ({ default: m.CadastroAgrarioPage })),
+)
+const CadastroFlorestaPage = lazy(() =>
+  import('./floresta/pages/CadastroFlorestaPage').then((m) => ({
+    default: m.CadastroFlorestaPage,
+  })),
+)
 
 type ViewMode = 'hub' | 'floresta' | 'agrario'
 
@@ -34,11 +41,23 @@ export function App() {
   }
 
   if (activeView === 'floresta') {
-    return <CadastroFlorestaPage onBackToHome={() => navigateTo('hub')} />
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[#17301D]" />}>
+        <CadastroFlorestaPage onBackToHome={() => navigateTo('hub')} />
+      </Suspense>
+    )
   }
 
   if (activeView === 'agrario') {
-    return <CadastroAgrarioPage onBackToHome={() => navigateTo('hub')} />
+    return (
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-gradient-to-br from-[#1C1108] via-[#2B1B10] to-[#140C07]" />
+        }
+      >
+        <CadastroAgrarioPage onBackToHome={() => navigateTo('hub')} />
+      </Suspense>
+    )
   }
 
   return (

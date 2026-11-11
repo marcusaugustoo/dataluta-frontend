@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react'
 
 export type FormTheme = 'floresta' | 'agrario'
 
@@ -55,6 +55,16 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ theme, children }: ThemeProviderProps) {
+  useEffect(() => {
+    const bg = themePresets[theme].pageBg
+    document.documentElement.style.backgroundColor = bg
+    document.body.style.backgroundColor = bg
+    return () => {
+      document.documentElement.style.backgroundColor = '#ffffff'
+      document.body.style.backgroundColor = '#ffffff'
+    }
+  }, [theme])
+
   const value = useMemo(
     () => ({
       theme,
